@@ -270,3 +270,76 @@ exports.down = function(knex) {
 rodar com 
 npx knex migrate:latest
 
+criar a migration create_incidents (tabela incidents)
+
+para voltar a migration:
+npx knex migrate:rollback
+para saber os status das migrations:
+npx knex migrate:status
+
+criar pasta ongs no insomnia
+enviar um json
+
+mudar o routes.js
+const express = require('express');
+const routes = express.Router();
+//pacote que vem junto com node para criptografia
+const crypto = require('crypto')
+routes.post('/ongs', (request, response) => {
+    const {name, email, whatsapp, city, uf} = request.body;
+    //cria um id que é uma string aleatória e converter para string hexadecimal
+    const id = crypto.randomBytes(4).toString('HEX');
+    
+    return response.json();
+})
+ 
+module.exports = routes;
+
+dentro da pasta database, criar connection.js
+const knex = require('knex');
+const configuration = require('../../knexfile');
+
+const connection = knex(configuration.development);
+
+module.exports = connection
+
+mudar a routes
+const express = require('express');
+const routes = express.Router();
+//pacote que vem junto com node para criptografia
+const crypto = require('crypto')
+const connection = require('./database/connection');
+
+//a função anônima deve ser assíncrona, pois*
+routes.post('/ongs', async(request, response) => {
+    const {name, email, whatsapp, city, uf} = request.body;
+    //cria um id que é uma string aleatória e converter para string hexadecimal
+    const id = crypto.randomBytes(4).toString('HEX');
+
+    //* ela deve aguardar a inserção no bd para retornar o response
+    //o node vai esperar o finalizar para continuar
+    await connection('ongs').insert({
+        id,
+        name, 
+        email,
+        whatsapp,
+        city,
+        uf,
+    })
+    
+
+    return response.json({ id });
+})
+ 
+module.exports = routes;
+
+testar no insomnia e deve retornar um json com id
+
+criar outra rota no routes.js
+routes.get('/ongs', async(request, response) =>{
+    const ongs = await connection('ongs').select('*');
+    return response.json(ongs);
+});
+
+testar - deve retornar uma lista com todas as 
+
