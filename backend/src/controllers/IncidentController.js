@@ -22,7 +22,8 @@ module.exports = {
                 'ongs.email',
                 'ongs.whatsapp',
                 'ongs.city',
-                'ongs.uf']);
+                'ongs.uf'
+            ]);
 
         response.header('X-Total-Count', count['count(*)']);
 
@@ -47,7 +48,7 @@ module.exports = {
     },
 
     async delete(request, response){
-        const { id } = request.params;
+        const { id } = request.params; 
         const ong_id = request.headers.authorization;
 
         const incident = await connection('incidents')
